@@ -1,31 +1,38 @@
-name: Tests
-on:
-  pull_request:
-  push:
-    branches:
-      - master
-    paths-ignore:
-      - '**.md'
+name: Testing Caching Large Files
+
+on: [push]
 
 jobs:
-  test:
-    name: Test on ${{ matrix.os }}
+  build:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macOS-latest]
+        os: [ubuntu-latest, macOS-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     
     steps:
     - uses: actions/checkout@v1
-      
-    - uses: actions/setup-node@v1
+    
+    - name: Create Cache Folder
+      run: |
+        mkdir ~/cache-folder
+        
+    - name: Checkout Cache Action
+      uses: bbq-beets/cache-1@master
+      with: 
+        repository: bbq-beets/cache-1
+        ref: v0.1
+        token: ${{ secrets.REPO_PAT }}
+        path: cache
+
+    - name: Run Cache Action
+      uses: ./../cache
+      id: my-cache
       with:
-        node-version: '12.x'
-
-    - run: npm ci
-
-    - name: Prettier Format Check
-      run: npm run format-check
-
-    - name: Build & Test
-      run: npm run test
+        path: ~/cache-folder
+        key: python-${{ runner.os }}-test-489-key
+        
+    - name: Creating File
+      if: steps.my-cache.outputs.cache-hit != 'true'
+      run: |
+        dd if=/dev/urandom of=file.txt count=489 bs=1048576
+        mv file.txt ~/cache-folder
