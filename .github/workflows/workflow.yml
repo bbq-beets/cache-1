@@ -15,17 +15,9 @@ jobs:
     - name: Create Cache Folder
       run: |
         mkdir ~/cache-folder
-        
-    - name: Checkout Cache Action
-      uses: bbq-beets/cache-1@master
-      with: 
-        repository: bbq-beets/cache-1
-        ref: v0.1
-        token: ${{ secrets.REPO_PAT }}
-        path: cache
 
     - name: Run Cache Action
-      uses: ./../cache
+      uses: bbq-beets/cache-1@master
       id: my-cache
       with:
         path: ~/cache-folder
