@@ -21,11 +21,11 @@ jobs:
       id: my-cache
       with:
         path: ~/cache-folder
-        key: python-${{ runner.os }}-test-490-key
+        key: python-${{ runner.os }}-test-520-key
         
     - name: Creating File
       if: steps.my-cache.outputs.cache-hit != 'true'
       run: |
-        dd if=/dev/urandom of=file.txt count=490 bs=1048576
+        dd if=/dev/urandom of=file.txt count=520 bs=1048576
         mv file.txt ~/cache-folder
 
