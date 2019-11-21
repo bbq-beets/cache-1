@@ -54,15 +54,8 @@ async function run() {
         core.debug(`Tar Path: ${tarPath}`);
         await exec(`"${tarPath}"`, args);
 
-        const fileSizeLimit = 600 * 1024 * 1024; // 600MB
         const archiveFileSize = fs.statSync(archivePath).size;
         core.debug(`File Size: ${archiveFileSize}`);
-        if (archiveFileSize > fileSizeLimit) {
-            core.warning(
-                `Cache size of ${archiveFileSize} bytes is over the 600MB limit, not saving cache.`
-            );
-            return;
-        }
 
         const stream = fs.createReadStream(archivePath);
         await cacheHttpClient.saveCache(stream, primaryKey);
